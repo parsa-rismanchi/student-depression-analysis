@@ -1,0 +1,148 @@
+---
+title: "Predicting Depression in University Students: The Role of Anxiety"
+author: "Parsa Rismanchi"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    self_contained: true
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(knitr)
+library(broom)
+set.seed(123)
+```
+
+## Abstract
+Analysis of a public student mental-health dataset (**n = 101**) shows higher depression rates among anxious students compared with non-anxious peers. Using descriptive statistics, a two-proportion (χ²) test, and a logistic regression, we find a substantially higher odds of depression for students reporting anxiety. Results are reported with effect sizes and confidence intervals; all materials are fully reproducible.
+
+## 1. Introduction
+**Aim/Hypothesis.** Anxiety is associated with higher depression risk among university students.  
+This mini project is a **replication with small extensions** using a public dataset (Islam, 2023; Kaggle).
+
+## 2. Methods
+**Data Source.** Kaggle: *Student Mental Health Dataset* (Shariful Islam, 2023).  
+**Variables.** Anxiety (Yes/No), Depression (Yes/No) — recoded to 1/0.  
+**Exclusions.** Rows with missing Anxiety/Depression removed.  
+**Analysis.** Descriptive rates by anxiety status; two-proportion test (χ²); logistic regression with odds ratio (OR) and 95% CI.
+
+```{r data}
+# Load and prepare data
+data <- readr::read_csv("student_mental_health.csv", col_types = readr::cols()) %>%
+  rename(
+    depression = `Do you have Depression?`,
+    anxiety    = `Do you have Anxiety?`
+  ) %>%
+  mutate(
+    depression = ifelse(depression == "Yes", 1L, 0L),
+    anxiety    = ifelse(anxiety == "Yes", 1L, 0L)
+  ) %>%
+  drop_na(depression, anxiety)
+
+# Sample size after exclusions
+n_total <- nrow(data)
+
+# 2x2 table (rows: anxiety 0/1; cols: depression 0/1)
+m <- with(data, table(anxiety, depression))
+
+# Group sizes and depressed counts
+n_not_anx   <- sum(m[1, ])
+n_anx       <- sum(m[2, ])
+dep_not_anx <- m[1, 2]
+dep_anx     <- m[2, 2]
+
+# Percent depressed by group
+pct_dep_not_anx <- round(100 * dep_not_anx / n_not_anx, 1)
+pct_dep_anx     <- round(100 * dep_anx     / n_anx,     1)
+
+# Two-proportion test (reports chi-square & p)
+prop_res  <- prop.test(c(dep_not_anx, dep_anx), c(n_not_anx, n_anx))
+chi_stat  <- unname(prop_res$statistic)
+p_chi     <- prop_res$p.value
+
+# Logistic regression for OR + 95% CI
+fit   <- glm(depression ~ anxiety, data = data, family = binomial())
+orTab <- broom::tidy(fit, exponentiate = TRUE, conf.int = TRUE) %>% dplyr::filter(term == "anxiety")
+OR    <- orTab$estimate
+CIlo  <- orTab$conf.low
+CIhi  <- orTab$conf.high
+p_glm <- orTab$p.value
+
+# Neat APA-style formatting for reporting
+OR_f    <- sprintf("%.2f", OR)
+CIlo_f  <- sprintf("%.2f", CIlo)
+CIhi_f  <- sprintf("%.2f", CIhi)
+p_glm_f <- sub("^0\\.", ".", format.pval(p_glm, digits = 3, eps = .001))   # drop leading 0
+chi_f   <- sprintf("%.2f", chi_stat)
+p_chi_f <- sub("^0\\.", ".", format.pval(p_chi, digits = 3, eps = .001))   # drop leading 0
+
+# Table for kable (minimal, clear)
+tab <- tibble::tibble(
+  `Anxiety Status`    = c("Not Anxious", "Anxious"),
+  `Depressed (n)`     = c(dep_not_anx,  dep_anx),
+  `Group Size (n)`    = c(n_not_anx,    n_anx),
+  `Percent Depressed` = c(pct_dep_not_anx, pct_dep_anx)
+)
+```
+
+## 3. Results
+
+```{r table, results='asis'}
+kable(
+  tab,
+  caption = paste0("Table 1. Percentage of Depressed Students by Anxiety Status (n = ", n_total, ")"),
+  align = c("l","c","c","c")
+)
+```
+
+**Key Finding.**  
+- **`r pct_dep_anx`%** of anxious students were depressed  
+- **`r pct_dep_not_anx`%** of non-anxious students were depressed
+
+**Statistical Test (APA-style).**  
+χ²(1) = `r chi_f`, *p* = `r p_chi_f`; OR = `r OR_f`, 95% CI [`r CIlo_f`, `r CIhi_f`], *p* = `r p_glm_f`.
+
+```{r plot}
+ggplot(data, aes(x = factor(anxiety, labels = c("Not Anxious","Anxious")),
+                 fill = factor(depression, labels = c("No Depression","Depressed")))) +
+  geom_bar(position = "fill") +
+  labs(x = "Anxiety Status", y = "Proportion", fill = "Depression",
+       title = paste0("Depression Proportion by Anxiety Status (n = ", n_total, ")")) +
+  scale_y_continuous(labels = scales::percent_format())
+```
+
+## 4. Discussion
+Findings replicate the expected association: anxious students show higher depression rates.  
+**Limitations.** Secondary, cross-sectional, self-report; no causal inference.  
+**Implications.** Routine anxiety screening may help identify students at higher risk.
+
+## 5. Conclusion
+Anxiety is associated with higher odds of depression in this student sample. Reporting emphasizes effect sizes (OR, CI) and reproducibility.
+
+## References
+Islam, S. (2023). *Student Mental Health Dataset*. Kaggle. (See dataset page for access and license details; accessed `r format(Sys.Date(), "%d %B %Y")`.)
+
+## Reproducibility & Integrity
+This is an **independent replication study** using a public dataset (Islam, 2023).  
+All code, analysis, and reporting were conducted by **Parsa Rismanchi**.  
+No part of this work was copied from existing notebooks.  
+Full reproducibility is ensured via the provided R Markdown file and session info below.
+
+## Data Availability
+- **Source:** Kaggle – Student Mental Health (Shariful Islam, 2023)  
+- **License:** See dataset page for license details  
+- **Ethics:** Public anonymized data; no human-subjects involvement
+
+## Session Info
+```{r session, echo=FALSE}
+sessionInfo()
+```
