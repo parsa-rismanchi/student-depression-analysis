@@ -1,9 +1,10 @@
----
+ ---
 title: "Predicting Depression in University Students: The Role of Anxiety"
 author: "Parsa Rismanchi"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
+  pdf_document:
+    latex_engine: xelatex
   html_document:
     theme: cosmo
     toc: true
@@ -16,27 +17,12 @@ fontsize: 11pt
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
 library(tidyverse)
 library(knitr)
 library(broom)
-set.seed(123)
-```
 
-## Abstract
-Analysis of a public student mental-health dataset (**n = 101**) shows higher depression rates among anxious students compared with non-anxious peers. Using descriptive statistics, a two-proportion (χ²) test, and a logistic regression, we find a substantially higher odds of depression for students reporting anxiety. Results are reported with effect sizes and confidence intervals; all materials are fully reproducible.
-
-## 1. Introduction
-**Aim/Hypothesis.** Anxiety is associated with higher depression risk among university students.  
-This mini project is a **replication with small extensions** using a public dataset (Islam, 2023; Kaggle).
-
-## 2. Methods
-**Data Source.** Kaggle: *Student Mental Health Dataset* (Shariful Islam, 2023).  
-**Variables.** Anxiety (Yes/No), Depression (Yes/No) — recoded to 1/0.  
-**Exclusions.** Rows with missing Anxiety/Depression removed.  
-**Analysis.** Descriptive rates by anxiety status; two-proportion test (χ²); logistic regression with odds ratio (OR) and 95% CI.
-
-```{r data}
-# Load and prepare data
+# ---- Load & prepare data ----
 data <- readr::read_csv("student_mental_health.csv", col_types = readr::cols()) %>%
   rename(
     depression = `Do you have Depression?`,
@@ -51,7 +37,14 @@ data <- readr::read_csv("student_mental_health.csv", col_types = readr::cols()) 
 # Sample size after exclusions
 n_total <- nrow(data)
 
-# 2x2 table (rows: anxiety 0/1; cols: depression 0/1)
+# Labelled factors for plotting / tables
+data <- data %>%
+  mutate(
+    anxiety_f    = factor(anxiety,    levels = c(0, 1), labels = c("Not Anxious", "Anxious")),
+    depression_f = factor(depression, levels = c(0, 1), labels = c("No Depression", "Depressed"))
+  )
+
+# 2x2 contingency table
 m <- with(data, table(anxiety, depression))
 
 # Group sizes and depressed counts
@@ -64,28 +57,30 @@ dep_anx     <- m[2, 2]
 pct_dep_not_anx <- round(100 * dep_not_anx / n_not_anx, 1)
 pct_dep_anx     <- round(100 * dep_anx     / n_anx,     1)
 
-# Two-proportion test (reports chi-square & p)
-prop_res  <- prop.test(c(dep_not_anx, dep_anx), c(n_not_anx, n_anx))
-chi_stat  <- unname(prop_res$statistic)
-p_chi     <- prop_res$p.value
+# Two-proportion test
+prop_res <- prop.test(c(dep_not_anx, dep_anx), c(n_not_anx, n_anx))
+chi_stat <- unname(prop_res$statistic)
+p_chi    <- prop_res$p.value
 
-# Logistic regression for OR + 95% CI
-fit   <- glm(depression ~ anxiety, data = data, family = binomial())
-orTab <- broom::tidy(fit, exponentiate = TRUE, conf.int = TRUE) %>% dplyr::filter(term == "anxiety")
+# Logistic regression
+fit <- glm(depression ~ anxiety, data = data, family = binomial())
+orTab <- broom::tidy(fit, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(term == "anxiety")
+
 OR    <- orTab$estimate
 CIlo  <- orTab$conf.low
 CIhi  <- orTab$conf.high
 p_glm <- orTab$p.value
 
-# Neat APA-style formatting for reporting
+# Formatting
 OR_f    <- sprintf("%.2f", OR)
 CIlo_f  <- sprintf("%.2f", CIlo)
 CIhi_f  <- sprintf("%.2f", CIhi)
-p_glm_f <- sub("^0\\.", ".", format.pval(p_glm, digits = 3, eps = .001))   # drop leading 0
+p_glm_f <- sub("^0\\.", ".", format.pval(p_glm, digits = 3, eps = .001))
 chi_f   <- sprintf("%.2f", chi_stat)
-p_chi_f <- sub("^0\\.", ".", format.pval(p_chi, digits = 3, eps = .001))   # drop leading 0
+p_chi_f <- sub("^0\\.", ".", format.pval(p_chi, digits = 3, eps = .001))
 
-# Table for kable (minimal, clear)
+# Table for kable
 tab <- tibble::tibble(
   `Anxiety Status`    = c("Not Anxious", "Anxious"),
   `Depressed (n)`     = c(dep_not_anx,  dep_anx),
@@ -94,55 +89,91 @@ tab <- tibble::tibble(
 )
 ```
 
+## Abstract
+Depression and anxiety are two of the most prevalent mental-health concerns among university students, often co-occurring and mutually reinforcing. Understanding how anxiety relates to depression can support early identification of at-risk students and guide preventative mental-health services on campus. In this mini project, I used a publicly available dataset of 101 university students to examine whether anxiety is associated with higher rates of depression. After excluding missing data, I compared depression prevalence between anxious and non-anxious students using descriptive statistics, a chi-square test of independence, and a logistic regression model. Results showed a clear pattern: anxious students had substantially higher depression rates (52.9%) compared with non-anxious peers (25.4%). This association was statistically significant, χ²(1) = 6.40, p = .0114, and a logistic model indicated that anxiety more than tripled the odds of depression (OR = 3.31, 95% CI [1.40, 8.03]). Findings replicate well-established comorbidity patterns and highlight anxiety screening as a practical strategy for early detection of depression among students.
+
+## 1. Introduction
+Depression and anxiety represent two of the most common psychological problems experienced by university students. Academic pressure, financial stress, social transition, and emerging adulthood all contribute to elevated vulnerability during this period. Numerous studies have documented that anxiety and depression frequently co-occur, with shared cognitive, emotional, and biological mechanisms. For example, both conditions involve negative affectivity, rumination, and difficulties regulating stress responses. In clinical settings, the presence of anxiety symptoms is often considered an early warning sign for depressive disorders.
+
+Given this evidence, an important question is whether self-reported anxiety can meaningfully predict depression risk within non-clinical student populations. This question is relevant for mental-health services on university campuses, which often operate with limited resources and rely on brief screenings to identify students who may benefit from early intervention.
+
+The present project aims to replicate the well-established association between anxiety and depression using a publicly available dataset from Kaggle (Islam, 2023). Although the dataset is simple and based on self-report, it provides a useful opportunity to examine whether anxious students display higher depression rates and to quantify the magnitude of this association using statistical tests commonly used in psychological research.
+
+The study follows a straightforward analytic plan: (1) compare depression prevalence between anxious and non-anxious groups, (2) statistically test the difference using a chi-square test of independence, and (3) estimate the odds ratio using logistic regression. Beyond replicating known patterns, the project also demonstrates reproducible research practices using R.
+
+## 2. Methods
+
+### Data Source  
+Data were obtained from the *Student Mental Health* dataset published on Kaggle by Shariful Islam (2023). The dataset includes self-reported information about students’ mental-health symptoms, including whether they experience anxiety and/or depression.
+
+### Variables  
+Two binary variables were used:  
+- **Anxiety:** Yes / No  
+- **Depression:** Yes / No  
+
+Both were recoded numerically (1 = Yes, 0 = No).
+
+### Sample and Exclusions  
+Rows with missing values in either variable were removed, resulting in a final analytic sample of **101 students**.
+
+### Analytic Approach  
+The analysis proceeded in three steps:  
+1. **Descriptive statistics** to compute depression prevalence in both groups.  
+2. **Chi-square test** to evaluate group differences.  
+3. **Logistic regression** to compute odds ratios and confidence intervals.  
+
+All analyses were conducted in R using the tidyverse ecosystem.
+
 ## 3. Results
 
 ```{r table, results='asis'}
 kable(
   tab,
   caption = paste0("Table 1. Percentage of Depressed Students by Anxiety Status (n = ", n_total, ")"),
-  align = c("l","c","c","c")
+  align  = "lccc"
 )
 ```
 
-**Key Finding.**  
-- **`r pct_dep_anx`%** of anxious students were depressed  
-- **`r pct_dep_not_anx`%** of non-anxious students were depressed
+Descriptive results showed clear differences between the two groups. Among non-anxious students, 17 out of 67 (25.4%) reported depression. In contrast, among anxious students, 18 out of 34 (52.9%) reported depression. These percentages indicate that symptoms of anxiety were associated with roughly double the rate of depression compared with peers without anxiety symptoms.
 
-**Statistical Test (APA-style).**  
-χ²(1) = `r chi_f`, *p* = `r p_chi_f`; OR = `r OR_f`, 95% CI [`r CIlo_f`, `r CIhi_f`], *p* = `r p_glm_f`.
+A chi-square test confirmed that this difference was statistically significant, **χ²(1) = 6.40, p = .0114**, indicating that anxiety and depression were not independent in this sample.
+
+The logistic regression model indicated that anxious students were more than **three times** as likely to report depression (OR = 3.31, 95% CI [1.40, 8.03], p = .007). Taken together, the descriptive, inferential, and regression analyses consistently demonstrate a strong association between anxiety and depression in this dataset.
 
 ```{r plot}
-ggplot(data, aes(x = factor(anxiety, labels = c("Not Anxious","Anxious")),
-                 fill = factor(depression, labels = c("No Depression","Depressed")))) +
+ggplot(data, aes(x = anxiety_f, fill = depression_f)) +
   geom_bar(position = "fill") +
-  labs(x = "Anxiety Status", y = "Proportion", fill = "Depression",
-       title = paste0("Depression Proportion by Anxiety Status (n = ", n_total, ")")) +
+  labs(
+    x     = "Anxiety Status",
+    y     = "Proportion",
+    fill  = "Depression",
+    title = paste0("Depression Proportion by Anxiety Status (n = ", n_total, ")")
+  ) +
   scale_y_continuous(labels = scales::percent_format())
 ```
 
 ## 4. Discussion
-Findings replicate the expected association: anxious students show higher depression rates.  
-**Limitations.** Secondary, cross-sectional, self-report; no causal inference.  
-**Implications.** Routine anxiety screening may help identify students at higher risk.
+The findings of this mini project replicate a well-documented pattern in clinical and health psychology: anxiety is strongly associated with elevated depression risk. The observed effect size aligns with prior literature illustrating substantial comorbidity between the two conditions. Models of negative affectivity and stress-diathesis frameworks explain how shared cognitive tendencies or heightened reactivity to stress can increase vulnerability to depressive symptoms among individuals with anxiety.
+
+From a clinical perspective, these results highlight the importance of early identification. University counseling centers often operate under heavy demand, making efficient screening processes critical. Brief anxiety assessments could help identify students who may need further evaluation or preventative support. This is particularly valuable in university settings, where students may delay help-seeking or lack awareness of worsening symptoms.
+
+The study has several limitations: cross-sectional design, reliance on self-report, and lack of relevant covariates such as stress levels, academic workload, personality traits, or social support. Still, the findings provide a clear, reproducible demonstration of how anxiety can serve as a marker of depression risk in student populations.
 
 ## 5. Conclusion
-Anxiety is associated with higher odds of depression in this student sample. Reporting emphasizes effect sizes (OR, CI) and reproducibility.
+This mini project shows that university students reporting anxiety symptoms have substantially higher odds of experiencing depression. Although limited by its self-report, cross-sectional design, the analysis replicates established patterns of comorbidity and demonstrates how basic statistical tools can yield clinically relevant insights. Increasing access to anxiety screening and early intervention may help reduce depression rates among students.
 
 ## References
 Islam, S. (2023). *Student Mental Health Dataset*. Kaggle. (See dataset page for access and license details; accessed `r format(Sys.Date(), "%d %B %Y")`.)
 
 ## Reproducibility & Integrity
-This is an **independent replication study** using a public dataset (Islam, 2023).  
-All code, analysis, and reporting were conducted by **Parsa Rismanchi**.  
-No part of this work was copied from existing notebooks.  
-Full reproducibility is ensured via the provided R Markdown file and session info below.
+This is an independent replication study using a public dataset (Islam, 2023). All code, analysis, and reporting were conducted by **Parsa Rismanchi**. No part of this work was copied from existing notebooks. Full reproducibility is ensured via the provided R Markdown file and session info below.
 
 ## Data Availability
 - **Source:** Kaggle – Student Mental Health (Shariful Islam, 2023)  
-- **License:** See dataset page for license details  
-- **Ethics:** Public anonymized data; no human-subjects involvement
+- **License:** See dataset page for details  
+- **Ethics:** Public anonymized dataset; no human-subjects involvement  
 
 ## Session Info
-```{r session, echo=FALSE}
+```{r}
 sessionInfo()
 ```
