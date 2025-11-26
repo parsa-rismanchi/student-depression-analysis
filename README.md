@@ -24,8 +24,7 @@ Reproducibility
 
 All analyses done in R (v4.5.1), using tools from the tidyverse suite
 - Check the full details on sessions and software versions right at the close of this write-up
-- Source of data: publicly available, anonymous info from Kaggle (Islam, 2023)
-
+- Source of data: publicly available, anonymous info from Kaggle (Islam, 2023)                                            English phrasing was lightly edited using language tools
 Author
 
 - Parsa Rismanchi – BSc Psychology (Iran)
