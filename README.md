@@ -1,34 +1,31 @@
-# Student Depression Analysis (R)
+Student Depression Analysis (R)
 
-Mini research project examining whether self-reported anxiety predicts depression in university students, using a public Kaggle dataset and reproducible R analysis.
+A small study checking if student anxiety levels link to depression, based on personal reports. The data comes from Kaggle - free to access. Analysis is done in R, with every step repeatable by others. Focus stays on real results, no guesswork.
 
-## Key Findings
+Key Findings
 
-- 52.9% of anxious students reported depression vs 25.4% of non-anxious students  
-- χ²(1) = 6.40, p = .011  
-- Logistic regression: OR = 3.31, 95% CI [1.40, 8.03] – anxiety more than tripled the odds of depression
+Over half of stressed pupils said they felt down, while one in four calm students did.
+χ²(1) was 6.40, while p hit .011
+- Logistic regression showed: OR = 3.31, 95% CI [1.40, 8.03] - so, when anxiety's present, chances of depression go way up. Instead of just doubling, they jump by over three times. That link stays clear within the confidence range. No fluff needed - it’s a solid signal. Not a guess, but data pointing one direction
 
-## Methods (Brief)
+Methods (Brief)
 
-- Dataset: *Student Mental Health* (Shariful Islam, 2023) from Kaggle  
-- Sample: n = 101 students (after listwise deletion for missing data)  
+- Dataset: Student Mental Health (Shariful Islam, 2023) from Kaggle
+- Example: n = 101 learners, once gaps were removed from records
 - Variables:
-  - Anxiety (Yes/No → 1/0)
-  - Depression (Yes/No → 1/0)
+Anxiety present? Use 1 if yes, 0 if no
+- Mood low? (Yep/Nah → 1/0)
 - Analyses:
-  - Descriptive statistics (prevalence of depression by anxiety status)
-  - χ² test of independence
-  - Logistic regression to estimate odds ratio + 95% CI
+- Summary numbers (how common depression is depending on whether anxiety is present or not)
+χ² test to check if variables are linked
+- Logistic regression used to figure out odds ratio along with 95% confidence interval
 
-## Reproducibility
+Reproducibility
 
-- All analyses conducted in R (v4.5.1) with the **tidyverse** ecosystem  
-- Full session info and package versions are included at the end of the report  
-- Data source: public, anonymised dataset from Kaggle (Islam, 2023)
+All analyses done in R (v4.5.1), using tools from the tidyverse suite
+- Check the full details on sessions and software versions right at the close of this write-up
+- Source of data: publicly available, anonymous info from Kaggle (Islam, 2023)
 
-## Author
+Author
 
 - Parsa Rismanchi – BSc Psychology (Iran)
-  
-
-
