@@ -1,4 +1,4 @@
- ---
+---
 title: "Predicting Depression in University Students: The Role of Anxiety"
 author: "Parsa Rismanchi"
 date: "`r Sys.Date()`"
@@ -90,24 +90,22 @@ tab <- tibble::tibble(
 ```
 
 ## Abstract
-Depression and anxiety are two of the most prevalent mental-health concerns among university students, often co-occurring and mutually reinforcing. Understanding how anxiety relates to depression can support early identification of at-risk students and guide preventative mental-health services on campus. In this mini project, I used a publicly available dataset of 101 university students to examine whether anxiety is associated with higher rates of depression. After excluding missing data, I compared depression prevalence between anxious and non-anxious students using descriptive statistics, a chi-square test of independence, and a logistic regression model. Results showed a clear pattern: anxious students had substantially higher depression rates (52.9%) compared with non-anxious peers (25.4%). This association was statistically significant, χ²(1) = 6.40, p = .0114, and a logistic model indicated that anxiety more than tripled the odds of depression (OR = 3.31, 95% CI [1.40, 8.03]). Findings replicate well-established comorbidity patterns and highlight anxiety screening as a practical strategy for early detection of depression among students.
-
+Feeling down or overly worried shows up a lot in college students - these struggles tend to come together, making each worse. Spotting how worry ties into sadness might help schools catch troubled students earlier while shaping better support systems. For this small study, I worked with an open-access set of info from 101 students to check if high anxiety links to more depression cases. Once incomplete answers were removed, I looked at depression numbers in those stressed versus those calm by using basic summaries, a chi-squared analysis, plus a logistic prediction method. The trend was obvious: students feeling tense reported much greater levels of low mood - over half (52.9%) - while only about a quarter (25.4%) of relaxed ones did. This link held up in stats, χ²(1) = 6.40, p = .0114, while a logistic setup showed anxious feelings raised chances of sadness by over three times (OR = 3.31, 95% CI [1.40, 8.03]). Results line up with known overlap trends, pointing toward checking for nervousness as a useful way to catch low moods sooner in school kids.
 ## 1. Introduction
-Depression and anxiety represent two of the most common psychological problems experienced by university students. Academic pressure, financial stress, social transition, and emerging adulthood all contribute to elevated vulnerability during this period. Numerous studies have documented that anxiety and depression frequently co-occur, with shared cognitive, emotional, and biological mechanisms. For example, both conditions involve negative affectivity, rumination, and difficulties regulating stress responses. In clinical settings, the presence of anxiety symptoms is often considered an early warning sign for depressive disorders.
+Feeling down or overly worried shows up a lot among college students. School demands, money troubles, changing friendships, along with the shift into adult life make things shaky at this age. Research keeps showing these two struggles pop up together - linked through how we think, feel, even how our bodies react. Take low moods and constant worry - they share traits like dwelling on bad thoughts, struggling to calm nerves. Spotting nervousness early might hint that sadness could follow soon after.
 
-Given this evidence, an important question is whether self-reported anxiety can meaningfully predict depression risk within non-clinical student populations. This question is relevant for mental-health services on university campuses, which often operate with limited resources and rely on brief screenings to identify students who may benefit from early intervention.
+With these findings in mind, it’s worth asking if personal reports of anxiety might actually help spot depression risks among students not in treatment. That matters for campus mental health teams - often stretched thin - who use quick check-ins to find those who could gain from early support.
 
-The present project aims to replicate the well-established association between anxiety and depression using a publicly available dataset from Kaggle (Islam, 2023). Although the dataset is simple and based on self-report, it provides a useful opportunity to examine whether anxious students display higher depression rates and to quantify the magnitude of this association using statistical tests commonly used in psychological research.
+The current study tries to confirm the known link between anxiety and depression by working with an open-access data collection from Kaggle (Islam, 2023). Even though the data isn't complex and comes from personal answers, it still allows us to check if stressed students tend to report more depressive symptoms - then measure how strong that connection is through standard psychology-focused stats methods.
 
-The study follows a straightforward analytic plan: (1) compare depression prevalence between anxious and non-anxious groups, (2) statistically test the difference using a chi-square test of independence, and (3) estimate the odds ratio using logistic regression. Beyond replicating known patterns, the project also demonstrates reproducible research practices using R.
-
+The study uses a clear step-by-step approach: first, it checks how common depression is in people with anxiety versus those without. Then, it confirms whether that gap matters by running a chi-square test. After that, it calculates the odds ratio through logistic regression. Instead of just repeating earlier findings, this work shows how to do reliable science using R code you can check and reuse.
 ## 2. Methods
 
 ### Data Source  
-Data were obtained from the *Student Mental Health* dataset published on Kaggle by Shariful Islam (2023). The dataset includes self-reported information about students’ mental-health symptoms, including whether they experience anxiety and/or depression.
+Data came from a student mental health collection posted on Kaggle by Shariful Islam in 2023. This set holds answers people gave about their own feelings, like if they’ve had signs of stress or low mood - sometimes both at once.
 
 ### Variables  
-Two binary variables were used:  
+Two yes-or-no factors were picked:
 - **Anxiety:** Yes / No  
 - **Depression:** Yes / No  
 
@@ -117,7 +115,7 @@ Both were recoded numerically (1 = Yes, 0 = No).
 Rows with missing values in either variable were removed, resulting in a final analytic sample of **101 students**.
 
 ### Analytic Approach  
-The analysis proceeded in three steps:  
+The review moved ahead in three phases:  
 1. **Descriptive statistics** to compute depression prevalence in both groups.  
 2. **Chi-square test** to evaluate group differences.  
 3. **Logistic regression** to compute odds ratios and confidence intervals.  
@@ -133,12 +131,11 @@ kable(
   align  = "lccc"
 )
 ```
+Descriptive findings revealed noticeable gaps across both groups. For students without anxiety, 0ne in four - 17 from a total of 67 - said they felt depressed. On the flip side, nearly every second anxious student - 18 out of 34 - reported low mood. That’s more than twice the share, suggesting those struggling with worry also faced higher chances of feeling down.
 
-Descriptive results showed clear differences between the two groups. Among non-anxious students, 17 out of 67 (25.4%) reported depression. In contrast, among anxious students, 18 out of 34 (52.9%) reported depression. These percentages indicate that symptoms of anxiety were associated with roughly double the rate of depression compared with peers without anxiety symptoms.
+A chi-square check showed the gap wasn’t due to chance, χ²(1) = 6.40, p = .0114 - so here, mood struggles tended to show up together.
 
-A chi-square test confirmed that this difference was statistically significant, **χ²(1) = 6.40, p = .0114**, indicating that anxiety and depression were not independent in this sample.
-
-The logistic regression model indicated that anxious students were more than **three times** as likely to report depression (OR = 3.31, 95% CI [1.40, 8.03], p = .007). Taken together, the descriptive, inferential, and regression analyses consistently demonstrate a strong association between anxiety and depression in this dataset.
+The logistic regression showed anxious students tended to report depression much more often - over three times higher odds (OR = 3.31, 95% CI [1.40, 8.03], p = .007). When combining descriptive stats, inference results, plus the regression findings, the link between anxiety and depression comes through clearly across all methods.
 
 ```{r plot}
 ggplot(data, aes(x = anxiety_f, fill = depression_f)) +
@@ -153,21 +150,18 @@ ggplot(data, aes(x = anxiety_f, fill = depression_f)) +
 ```
 
 ## 4. Discussion
-The findings of this mini project replicate a well-documented pattern in clinical and health psychology: anxiety is strongly associated with elevated depression risk. The observed effect size aligns with prior literature illustrating substantial comorbidity between the two conditions. Models of negative affectivity and stress-diathesis frameworks explain how shared cognitive tendencies or heightened reactivity to stress can increase vulnerability to depressive symptoms among individuals with anxiety.
+The results from this small study match what's been seen before: when people feel more anxious, they’re also way likelier to deal with depression. Not surprising - earlier work shows these two often show up together. Instead of seeing them as separate, think of it like overlapping habits in thinking or reacting badly under pressure. That overlap? It makes folks already struggling with worry much more prone to slipping into low moods.
 
-From a clinical perspective, these results highlight the importance of early identification. University counseling centers often operate under heavy demand, making efficient screening processes critical. Brief anxiety assessments could help identify students who may need further evaluation or preventative support. This is particularly valuable in university settings, where students may delay help-seeking or lack awareness of worsening symptoms.
+These findings matter because spotting issues early can make a difference. With high student demand, campus counseling services need quick ways to sort through cases. Short anxiety check-ins might point out who needs deeper look or extra care down the line. That’s useful on campuses - many students wait too long before reaching out, sometimes not noticing their struggles are getting worse.
 
-The study has several limitations: cross-sectional design, reliance on self-report, and lack of relevant covariates such as stress levels, academic workload, personality traits, or social support. Still, the findings provide a clear, reproducible demonstration of how anxiety can serve as a marker of depression risk in student populations.
-
+The study comes with a few drawbacks - like its one-time snapshot approach, answers based on personal recall, also missing key factors like stress, school pressure, character type, or help from others. Even so, the results clearly show, in a way that can be repeated, how anxiety might signal possible depression among students.
 ## 5. Conclusion
-This mini project shows that university students reporting anxiety symptoms have substantially higher odds of experiencing depression. Although limited by its self-report, cross-sectional design, the analysis replicates established patterns of comorbidity and demonstrates how basic statistical tools can yield clinically relevant insights. Increasing access to anxiety screening and early intervention may help reduce depression rates among students.
-
+This small study suggests students who say they feel anxious are much more likely to also struggle with sadness. Even though it relies on personal answers and just one snapshot in time, the results still match up with what we already know about these issues often occurring together - while showing even simple math methods can uncover useful real-world clues. Getting students easier access to check-ups for worry signs - or quick support when needed - could lower how many end up dealing with low moods.
 ## References
 Islam, S. (2023). *Student Mental Health Dataset*. Kaggle. (See dataset page for access and license details; accessed `r format(Sys.Date(), "%d %B %Y")`.)
 
 ## Reproducibility & Integrity
-This is an independent replication study using a public dataset (Islam, 2023). All code, analysis, and reporting were conducted by **Parsa Rismanchi**. No part of this work was copied from existing notebooks. Full reproducibility is ensured via the provided R Markdown file and session info below.
-
+This project repeats earlier research using openly available data (Islam, 2023). You can reproduce every step thanks to the included R Markdown plus session details shown here.
 ## Data Availability
 - **Source:** Kaggle – Student Mental Health (Shariful Islam, 2023)  
 - **License:** See dataset page for details  
