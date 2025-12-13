@@ -77,7 +77,7 @@ tab <- tibble::tibble(
 )
 ```
 ## Abstract
-Depression and anxiety show up a lot in university students. These struggles tend to come together, making each worse. Spotting how worry ties into sadness might help universities catch troubled students earlier while shaping better support systems. For this small study, I worked with an open-access dataset. After removing incomplete samples, the final analytical sample included 101 students. I examined depression prevalence among anxious versus non-anxious students using descriptive statistics, a chi-squared analysis, and logistic regression. The trend was obvious: students feeling tense reported much greater levels of low mood (over half, 52.9%), while only about a quarter (25.4%) of relaxed ones did. This link held up in stats, χ²(1) = 6.40, p = .0114, while a logistic setup showed anxious feelings raised chances of sadness by over three times (OR = 3.31, 95% CI [1.40, 8.03]). Results line up with known overlap trends, pointing toward checking for nervousness as a useful way to catch low moods sooner in university students.
+Depression and anxiety show up a lot in university students. These struggles tend to come together, making each worse. Spotting how worry ties into sadness might help universities catch troubled students earlier while shaping better support systems. For this small study, I worked with an open-access dataset. After removing incomplete samples, the final analytical sample included 101 students. I examined depression prevalence among anxious versus non-anxious students using descriptive statistics, a chi-squared analysis, and logistic regression. The trend was obvious: students feeling tense reported much greater levels of low mood (over half, 52.9%), while only about a quarter (25.4%) of relaxed ones did. This link held up in stats, $\chi^2$ (1) = 6.40, p = .0114, while a logistic setup showed anxious feelings raised chances of sadness by over three times (OR = 3.31, 95% CI [1.40, 8.03]). Results line up with known overlap trends, pointing toward checking for nervousness as a useful way to catch low moods sooner in university students.
 
 ## Introduction
 Depression and anxiety can be seen among university students. School demands, money troubles, changing friendships, along with the shift into adult life make things shaky at this age. Research shows these two struggles often occur together and may be linked through shared cognitive, emotional, and physiological processes, such as persistent worry and low mood. They also share features like rumination and difficulty regulating emotional responses. Detecting nervousness early might hint that sadness could follow soon after.
@@ -125,10 +125,11 @@ kable(
 ```
 Descriptive findings revealed noticeable gaps across both groups. One fourth of the students without anxiety felt depressed. On the contrary, just over half of the anxious students (18 out of 34; 52.9%) reported low mood. That’s more than twice the proportion. Those struggling with worry showed a higher chance of depression. 
 
-A two-proportion test, reported as a chi-squared statistic, showed that this difference was unlikely due to chance, χ²(1) = 6.40, p = .0114.
+A two-proportion test, reported as a chi-squared statistic, showed that this difference was unlikely due to chance, $\chi^2$
+ (1) = 6.40, p = .0114.
 
 The logistic regression showed that anxious students had over three times higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03], p = .007). Instead of looking at each result alone, putting together the averages, test outcomes, or even the model patterns show how strongly anxiety ties to depression, no matter the approach.
-```{r plot}
+```{r plot, fig.width=5.5, fig.height=4, fig.align="center"}
 ggplot(data, aes(x = anxiety_f, fill = depression_f)) +
   geom_bar(position = "fill") +
   labs(
