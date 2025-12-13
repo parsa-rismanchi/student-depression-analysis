@@ -1,30 +1,21 @@
-Student Depression Analysis (R)
+# Student Depression Analysis (R)
 
-A small study checking if student anxiety levels link to depression, based on personal reports. The data comes from Kaggle - free to access. Analysis is done in R, with every step repeatable by others. Focus stays on real results, no guesswork.
+This project examines whether self-reported anxiety is associated with depression among university students. The analysis is based on an open-access dataset from Kaggle and is fully reproducible using R.
 
-Key Findings
+## Key Findings
+- Over half of students reporting anxiety also reported depressive symptoms, compared with approximately one quarter of non-anxious students.
+- A two-proportion test indicated a significant association between anxiety and depression, χ²(1) = 6.40, p = .011.
+- Logistic regression showed that students reporting anxiety had substantially higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03]).
 
-Over half of stressed pupils said they felt down, while one in four calm students did.
-χ²(1) was 6.40, while p hit .011
-- Logistic regression showed: OR = 3.31, 95% CI [1.40, 8.03] - so, when anxiety's present, chances of depression go way up. Instead of just doubling, they jump by over three times. That link stays clear within the confidence range. No fluff needed - it’s a solid signal. Not a guess, but data pointing one direction
+## Methods (Brief)
+- **Dataset:** Student Mental Health dataset (Shariful Islam, 2023), sourced from Kaggle.
+- **Sample:** Final analytic sample of 101 students after removal of missing responses.
+- **Variables:**
+  - Anxiety (0 = No, 1 = Yes)
+  - Depression (0 = No, 1 = Yes)
+- **Analyses:**
+  - Descriptive statistics to estimate depression prevalence by anxiety status.
+  - Two-proportion test reported as a chi-squared statistic.
+  - Logistic regression to estimate odds ratios and 95% confidence intervals.
 
-Methods (Brief)
-
-- Dataset: Student Mental Health (Shariful Islam, 2023) from Kaggle
-- Example: n = 101 learners, once gaps were removed from records
-- Variables:
-Anxiety present? Use 1 if yes, 0 if no
-- Mood low? (Yep/Nah → 1/0)
-- Analyses:
-- Summary numbers (how common depression is depending on whether anxiety is present or not)
-χ² test to check if variables are linked
-- Logistic regression used to figure out odds ratio along with 95% confidence interval
-
-Reproducibility
-
-All analyses done in R (v4.5.1), using tools from the tidyverse suite
-- Check the full details on sessions and software versions right at the close of this write-up
-- Source of data: publicly available, anonymous info from Kaggle (Islam, 2023)                                            English phrasing was lightly edited using language tools
-Author
-
-- Parsa Rismanchi – BSc Psychology (Iran)
+## Reproducibilit
