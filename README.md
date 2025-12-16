@@ -1,23 +1,32 @@
-Student Depression Analysis (R)
+# Student Depression Analysis (R)
 
-The study will examine the relationship between self-reported anxiety and the presence of depression in university students. The research will employ a Kaggle dataset and is reproducible in R.
+In this study, the research question being addressed is whether there is a **relationship** between reported anxiety and reported depression among university students.
 
-Key Findings
-- A higher percentage of students who experienced anxiety also had depressive symptoms compared with non-anxious peers—approximately one in two students with anxiety symptoms compared with one in four non-anxious students.
-- A chi-squared test of independence (2x2 contingency table; no continuity correction) revealed a significant link between anxiety and depression. This is reflected in the knitted report under χ² and p-values.
-- The logistic regression analysis showed that students who suffered from anxiety were much more likely to report depression (OR = 3.31, 95% CI: 1.40 to 8.03).
+The data used in the research is from an open-access Kaggle dataset.
 
-Techniques (Brief)
-- Dataset: Student Mental Health dataset (Shariful Islam, 2023), sourced from Kaggle.
-- Sample: Final analytic sample of 101 students after eliminating cases with missing answers.
-- Variables:
+## Key Findings
+- More than half of students reporting anxiety also reported depressive symptoms, whereas about one quarter of non-anxious students did.
+- A chi-squared test of independence on a 2x2 table (no continuity correction) indicated a relationship between anxiety and depression (see the knitted report for χ² and p-values).
+- In logistic regression analysis, it was found that students who reported experiencing anxiety had higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03]).
+
+## Methods (Brief)
+- **Dataset:** Student Mental Health Dataset (Shariful Islam, 2023) obtained through Kaggle.
+- **Sample:** Final analytic sample of **101** students after excluding missing data for the variables of interest.
+- **Variables:**
   - Anxiety (0 = No, 1 = Yes)
   - Depression (0 = No, 1 = Yes)
-- Analyses:
-  - Descriptive statistics for prevalence calculation of depression by anxiety status.
-  - Chi-squared test of independence to compare groups (2x2 table; no continuity correction).
-  - Logistic regression to estimate odds ratios and 95% confidence intervals.
+- **Analyses:**
+  - Descriptive statistics for estimating the prevalence of depression by anxiety status.
+  - Chi-squared test of independence (2x2 contingency table; no continuity correction).
+  - Logistic regression for estimating odds ratios and 95% confidence intervals.
 
-Reproducibility
-- Requirements: R (4.0+ preferred) and the packages tidyverse, knitr, broom.
-- To replicate, copy `student_mental_health.csv` into your project folder and kn
+## Notes / Interpretation
+- Findings are based on **associations** from a cross-sectional, self-report dataset and cannot establish causality.
+- The results may be affected by other uncontrolled factors (e.g., stress levels, sleeping patterns, academic pressures) not accounted for in this simplified model.
+
+## Reproducibility / Requirements
+- **R:** version 4.0+ preferred
+- **Packages:** tidyverse, knitr, broom
+- **To reproduce:**
+  1. Ensure `student_mental_health.csv` is in your working directory (project folder).
+  2. Knit the `.Rmd` file to HTML or PDF.
