@@ -53,9 +53,10 @@ dep_anx     <- cont_table[2,2]
 pct_not_anx <- round(100 * dep_not_anx / not_anx_n, 1)
 pct_anx     <- round(100 * dep_anx     / anx_n,     1)
 
-prop_test <- prop.test(c(dep_not_anx, dep_anx), c(not_anx_n, anx_n))
-chi_value <- round(unname(prop_test$statistic), 2)
-p_chi     <- format.pval(prop_test$p.value, digits = 3, eps = .001)
+chi_res   <- chisq.test(cont_table, correct = FALSE)
+chi_value <- round(unname(chi_res$statistic), 2)
+p_chi     <- format.pval(chi_res$p.value, digits = 3, eps = .001)
+
 
 my_model <- glm(depression ~ anxiety, data = student_data, family = binomial())
 or_res   <- tidy(my_model, exponentiate = TRUE, conf.int = TRUE) %>% filter(term == "anxiety")
