@@ -100,7 +100,7 @@ Lines with missing values in either variable were removed, resulting in a final 
 Analytic Approach  
 The review moved ahead in three phases:  
 Descriptive statistics to compute depression prevalence in both groups.  
-A two-proportion test (reported as a chi-squared statistic) to evaluate group differences.  
+Chi-square test of independence (2×2 contingency table; no continuity correction) to evaluate group differences.
 Logistic regression to compute odds ratios and confidence intervals.  
 All analyses were conducted in R using the tidyverse.
 
@@ -115,7 +115,7 @@ kable(
 ```
 
 Descriptive findings revealed noticeable gaps across both groups. One fourth of the students without anxiety felt depressed. On the contrary, just over half of the anxious students (18 out of 34; 52.9%) reported low mood. That’s more than twice the proportion. Those struggling with worry showed a higher chance of depression.  
-A two-proportion test, reported as a chi-squared statistic, showed that this difference was unlikely due to chance, $\chi^2$ (1) = `r chi_value`, p = `r p_chi`.  
+A chi-square test of independence showed that this difference was unlikely due to chance, $\chi^2$ (1) = `r chi_value`, p = `r p_chi`.  
 The logistic regression showed that anxious students had over three times higher odds of reporting depression (OR = `r OR`, 95% CI [`r CI_low`, `r CI_high`], p = `r p_glm`). Instead of looking at each result alone, putting together the averages, test outcomes, or even the model patterns show how strongly anxiety ties to depression, no matter the approach.
 
 ```{r plot}
