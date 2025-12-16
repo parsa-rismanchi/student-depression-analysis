@@ -7,7 +7,6 @@ The data used in the research is from an open-access Kaggle dataset.
 ## Key Findings
 - More than half of students reporting anxiety also reported depressive symptoms, whereas about one quarter of non-anxious students did.
 -A chi-squared test of independence on a 2×2 table (no continuity correction) indicated a relationship between anxiety and depression, χ²(1) = 7.57, p = 0.00594.
-
 - In logistic regression analysis, it was found that students who reported experiencing anxiety had higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03]).
 
 ## Methods (Brief)
