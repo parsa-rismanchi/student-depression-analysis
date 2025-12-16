@@ -1,21 +1,23 @@
-# Student Depression Analysis (R)
+Student Depression Analysis (R)
 
-This project examines whether self-reported anxiety is associated with depression among university students. The analysis is based on an open-access dataset from Kaggle and is fully reproducible using R.
+The study will examine the relationship between self-reported anxiety and the presence of depression in university students. The research will employ a Kaggle dataset and is reproducible in R.
 
-## Key Findings
-- Over half of students reporting anxiety also reported depressive symptoms, compared with approximately one quarter of non-anxious students.
-- A two-proportion test indicated a significant association between anxiety and depression, χ²(1) = 6.40, p = .011.
-- Logistic regression showed that students reporting anxiety had substantially higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03]).
+Key Findings
+- A higher percentage of students who experienced anxiety also had depressive symptoms compared with non-anxious peers—approximately one in two students with anxiety symptoms compared with one in four non-anxious students.
+- A chi-squared test of independence (2x2 contingency table; no continuity correction) revealed a significant link between anxiety and depression. This is reflected in the knitted report under χ² and p-values.
+- The logistic regression analysis showed that students who suffered from anxiety were much more likely to report depression (OR = 3.31, 95% CI: 1.40 to 8.03).
 
-## Methods (Brief)
-- **Dataset:** Student Mental Health dataset (Shariful Islam, 2023), sourced from Kaggle.
-- **Sample:** Final analytic sample of 101 students after removal of missing responses.
-- **Variables:**
+Techniques (Brief)
+- Dataset: Student Mental Health dataset (Shariful Islam, 2023), sourced from Kaggle.
+- Sample: Final analytic sample of 101 students after eliminating cases with missing answers.
+- Variables:
   - Anxiety (0 = No, 1 = Yes)
   - Depression (0 = No, 1 = Yes)
-- **Analyses:**
-  - Descriptive statistics to estimate depression prevalence by anxiety status.
-  - Two-proportion test reported as a chi-squared statistic.
+- Analyses:
+  - Descriptive statistics for prevalence calculation of depression by anxiety status.
+  - Chi-squared test of independence to compare groups (2x2 table; no continuity correction).
   - Logistic regression to estimate odds ratios and 95% confidence intervals.
 
-## Reproducibilit
+Reproducibility
+- Requirements: R (4.0+ preferred) and the packages tidyverse, knitr, broom.
+- To replicate, copy `student_mental_health.csv` into your project folder and kn
