@@ -20,132 +20,118 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(knitr)
 library(broom)
-# ---- Load & prepare data ----
-data <- readr::read_csv("student_mental_health.csv", col_types = readr::cols()) %>%
+
+# رینیم 
+student_data <- readr::read_csv("student_mental_health.csv", col_types = readr::cols())
+
+student_data <- student_data %>%
   rename(
     depression = `Do you have Depression?`,
-    anxiety    = `Do you have Anxiety?`
+    anxiety = `Do you have Anxiety?`
   ) %>%
   mutate(
     depression = ifelse(depression == "Yes", 1L, 0L),
-    anxiety    = ifelse(anxiety == "Yes", 1L, 0L)
+    anxiety = ifelse(anxiety == "Yes", 1L, 0L)
   ) %>%
   drop_na(depression, anxiety)
-# Sample size after exclusions
-n_total <- nrow(data)
-# Labelled factors for plotting / tables
-data <- data %>%
-  mutate(
-    anxiety_f    = factor(anxiety,    levels = c(0, 1), labels = c("Not Anxious", "Anxious")),
-    depression_f = factor(depression, levels = c(0, 1), labels = c("No Depression", "Depressed"))
-  )
-# 2x2 contingency table
-m <- with(data, table(anxiety, depression))
-# Group sizes and depressed counts
-n_not_anx   <- sum(m[1, ])
-n_anx       <- sum(m[2, ])
-dep_not_anx <- m[1, 2]
-dep_anx     <- m[2, 2]
-# Percent depressed by group
-pct_dep_not_anx <- round(100 * dep_not_anx / n_not_anx, 1)
-pct_dep_anx     <- round(100 * dep_anx     / n_anx,     1)
-# Two-proportion test
-prop_res <- prop.test(c(dep_not_anx, dep_anx), c(n_not_anx, n_anx))
-chi_stat <- unname(prop_res$statistic)
-p_chi    <- prop_res$p.value
-# Logistic regression
-fit <- glm(depression ~ anxiety, data = data, family = binomial())
-orTab <- broom::tidy(fit, exponentiate = TRUE, conf.int = TRUE) %>%
-  filter(term == "anxiety")
-OR    <- orTab$estimate
-CIlo  <- orTab$conf.low
-CIhi  <- orTab$conf.high
-p_glm <- orTab$p.value
-# Formatting
-OR_f    <- sprintf("%.2f", OR)
-CIlo_f  <- sprintf("%.2f", CIlo)
-CIhi_f  <- sprintf("%.2f", CIhi)
-p_glm_f <- sub("^0\\.", ".", format.pval(p_glm, digits = 3, eps = .001))
-chi_f   <- sprintf("%.2f", chi_stat)
-p_chi_f <- sub("^0\\.", ".", format.pval(p_chi, digits = 3, eps = .001))
-# Table for kable
-tab <- tibble::tibble(
-  `Anxiety Status`    = c("Not Anxious", "Anxious"),
-  `Depressed (n)`     = c(dep_not_anx,  dep_anx),
-  `Group Size (n)`    = c(n_not_anx,    n_anx),
-  `Percent Depressed` = c(pct_dep_not_anx, pct_dep_anx)
+
+total_n <- nrow(student_data)
+
+# برای دیباگ یه پرینت گذاشتم
+print(paste("تعداد نمونه بعد از حذف ناقص‌ها:", total_n))
+
+student_data$anxiety_f <- factor(student_data$anxiety, levels = c(0,1), labels = c("Not Anxious", "Anxious"))
+student_data$depression_f <- factor(student_data$depression, levels = c(0,1), labels = c("No Depression", "Depressed"))
+
+cont_table <- table(student_data$anxiety, student_data$depression)
+
+not_anx_n   <- sum(cont_table[1,])
+anx_n       <- sum(cont_table[2,])
+dep_not_anx <- cont_table[1,2]
+dep_anx     <- cont_table[2,2]
+
+pct_not_anx <- round(100 * dep_not_anx / not_anx_n, 1)
+pct_anx     <- round(100 * dep_anx     / anx_n,     1)
+
+prop_test <- prop.test(c(dep_not_anx, dep_anx), c(not_anx_n, anx_n))
+chi_value <- round(unname(prop_test$statistic), 2)
+p_chi     <- format.pval(prop_test$p.value, digits = 3, eps = .001)
+
+my_model <- glm(depression ~ anxiety, data = student_data, family = binomial())
+or_res   <- tidy(my_model, exponentiate = TRUE, conf.int = TRUE) %>% filter(term == "anxiety")
+
+OR      <- round(or_res$estimate, 2)
+CI_low  <- round(or_res$conf.low, 2)
+CI_high <- round(or_res$conf.high, 2)
+p_glm   <- format.pval(or_res$p.value, digits = 3, eps = .001)
+
+# جدول مهایی با اسم ستون
+my_table <- data.frame(
+  `Anxiety Status` = c("Not Anxious", "Anxious"),
+  `Depressed (n)` = c(dep_not_anx, dep_anx),
+  `Group Size (n)` = c(not_anx_n, anx_n),
+  `Percent Depressed` = c(pct_not_anx, pct_anx)
 )
 ```
+
 ## Abstract
-Depression and anxiety show up a lot in university students. These struggles tend to come together, making each worse. Spotting how worry ties into sadness might help universities catch troubled students earlier while shaping better support systems. For this small study, I worked with an open-access dataset. After removing incomplete samples, the final analytical sample included 101 students. I examined depression prevalence among anxious versus non-anxious students using descriptive statistics, a chi-squared analysis, and logistic regression. The trend was obvious: students feeling tense reported much greater levels of low mood (over half, 52.9%), while only about a quarter (25.4%) of relaxed ones did. This link held up in stats, $\chi^2$ (1) = 6.40, p = .0114, while a logistic setup showed anxious feelings raised chances of sadness by over three times (OR = 3.31, 95% CI [1.40, 8.03]). Results line up with known overlap trends, pointing toward checking for nervousness as a useful way to catch low moods sooner in university students.
+Depression and anxiety show up a lot in university students. These struggles tend to come together, making each worse. Spotting how worry ties into sadness might help universities catch troubled students earlier while shaping better support systems. For this small study, I worked with an open-access dataset. After removing incomplete samples, the final analytical sample included 101 students. I examined depression prevalence among anxious versus non-anxious students using descriptive statistics, a chi-squared analysis, and logistic regression. The trend was obvious: students feeling tense reported much greater levels of low mood (over half, 52.9%), while only about a quarter (25.4%) of relaxed ones did. This link held up in stats, $\chi^2$ (1) = `r chi_value`, p = `r p_chi`, while a logistic setup showed anxious feelings raised chances of sadness by over three times (OR = `r OR`, 95% CI [`r CI_low`, `r CI_high`]). Results line up with known overlap trends, pointing toward checking for nervousness as a useful way to catch low moods sooner in university students.
 
 ## Introduction
 Depression and anxiety can be seen among university students. School demands, money troubles, changing friendships, along with the shift into adult life make things shaky at this age. Research shows these two struggles often occur together and may be linked through shared cognitive, emotional, and physiological processes, such as persistent worry and low mood. They also share features like rumination and difficulty regulating emotional responses. Detecting nervousness early might hint that sadness could follow soon after.
-
 With these findings in mind, it’s worth asking if personal reports of anxiety might actually help detect depression risks among students not in treatment. That matters for campus mental health teams, who use quick check-ins to find those who could gain from early support.
-
 The current study tries to confirm the known link between anxiety and depression by working with an open-access data collection from Kaggle (Islam, 2023). Though the data came from personal answers, and it is not complex, it still helps us to check if stressed students tend to report more depressive symptoms. Through that, we are able to measure how strong that connection is through standard psychology-focused statistical methods.
-
 The study uses a clear step-by-step approach: first, it checks how common depression is in students with anxiety versus those without. Then, it confirms whether that gap matters by running a chi-square test. Additionally, it calculates the odds ratio via logistic regression. Instead of just repeating earlier findings, this work shows how to do reliable science using R code you can check and reuse.
 
 ## Methods
-Data Source
+Data Source  
 Data came from a student mental health collection posted on Kaggle by Shariful Islam in 2023. This set holds answers people gave about their own feelings, like if they’ve had signs of stress or low mood, sometimes both at once.
 
-Variables
-Two yes-or-no factors were picked:
-
-Anxiety: Yes / No
-
-Depression: Yes / No
-
+Variables  
+Two yes-or-no factors were picked:  
+Anxiety: Yes / No  
+Depression: Yes / No  
 Both were recoded numerically (1 = Yes, 0 = No).
 
-Sample and Exclusions
+Sample and Exclusions  
 Lines with missing values in either variable were removed, resulting in a final analytic sample of 101 students.
 
-Analytic Approach
-The review moved ahead in three phases:
-
-Descriptive statistics to compute depression prevalence in both groups.
-
-A two-proportion test (reported as a chi-squared statistic) to evaluate group differences.
-
-Logistic regression to compute odds ratios and confidence intervals.
-
+Analytic Approach  
+The review moved ahead in three phases:  
+Descriptive statistics to compute depression prevalence in both groups.  
+A two-proportion test (reported as a chi-squared statistic) to evaluate group differences.  
+Logistic regression to compute odds ratios and confidence intervals.  
 All analyses were conducted in R using the tidyverse.
 
 ## Results
-```{r table, results='asis'}
+
+```{r table}
 kable(
-  tab,
-  caption = paste0("Table 1. Percentage of Depressed Students by Anxiety Status (n = ", n_total, ")"),
-  align  = "lccc"
+  my_table,
+  caption = paste0("Table 1. Percentage of Depressed Students by Anxiety Status (n = ", total_n, ")"),
+  align = "lccc"
 )
 ```
-Descriptive findings revealed noticeable gaps across both groups. One fourth of the students without anxiety felt depressed. On the contrary, just over half of the anxious students (18 out of 34; 52.9%) reported low mood. That’s more than twice the proportion. Those struggling with worry showed a higher chance of depression. 
 
-A two-proportion test, reported as a chi-squared statistic, showed that this difference was unlikely due to chance, $\chi^2$
- (1) = 6.40, p = .0114.
+Descriptive findings revealed noticeable gaps across both groups. One fourth of the students without anxiety felt depressed. On the contrary, just over half of the anxious students (18 out of 34; 52.9%) reported low mood. That’s more than twice the proportion. Those struggling with worry showed a higher chance of depression.  
+A two-proportion test, reported as a chi-squared statistic, showed that this difference was unlikely due to chance, $\chi^2$ (1) = `r chi_value`, p = `r p_chi`.  
+The logistic regression showed that anxious students had over three times higher odds of reporting depression (OR = `r OR`, 95% CI [`r CI_low`, `r CI_high`], p = `r p_glm`). Instead of looking at each result alone, putting together the averages, test outcomes, or even the model patterns show how strongly anxiety ties to depression, no matter the approach.
 
-The logistic regression showed that anxious students had over three times higher odds of reporting depression (OR = 3.31, 95% CI [1.40, 8.03], p = .007). Instead of looking at each result alone, putting together the averages, test outcomes, or even the model patterns show how strongly anxiety ties to depression, no matter the approach.
-```{r plot, fig.width=5.5, fig.height=4, fig.align="center"}
-ggplot(data, aes(x = anxiety_f, fill = depression_f)) +
+```{r plot}
+ggplot(student_data, aes(x = anxiety_f, fill = depression_f)) +
   geom_bar(position = "fill") +
   labs(
-    x     = "Anxiety Status",
-    y     = "Proportion",
-    fill  = "Depression",
-    title = paste0("Depression Proportion by Anxiety Status (n = ", n_total, ")")
+    x = "Anxiety Status",
+    y = "Proportion",
+    fill = "Depression",
+    title = paste0("Depression Proportion by Anxiety Status (n = ", total_n, ")")
   ) +
   scale_y_continuous(labels = scales::percent_format())
 ```
 
 ## Discussion
 The results from this small study match what's been seen before: when people feel more anxious, they’re also way more likely to deal with depression. Not surprising, earlier work demonstrates these two often show up together. Instead of seeing them as separate, think of it like overlapping habits in thinking or reacting badly under pressure. That overlap? It makes people already struggling with worry much more vulnerable to slipping into low moods.
-
 These findings matter because detecting issues early can make a significant difference. With high student demand, campus counseling services need quick ways to sort through cases. Short anxiety check-ins might point out who needs deeper look or extra care down the line. That’s useful on campuses - many students wait too long before reaching out, sometimes not noticing their struggles are getting worse.
-
 The study comes with a few drawbacks - like its one-time snapshot approach, answers based on personal recall, also missing key factors like stress, university pressure, personality type, or help from others. Even so, the results clearly show, in a way that can be repeated, how anxiety might signal possible depression among students.
 
 ## Conclusion
@@ -153,15 +139,15 @@ This small research suggests that students reporting anxiety tend to face depres
 
 ## References
 Islam, S. (2023). Student Mental Health Dataset. Kaggle. Accessed `r format(Sys.Date(), "%d %B %Y")`.
+
 ## Reproducibility & Integrity
 This project repeats earlier research using openly available data (Islam, 2023). You can reproduce every step via R Markdown.
 
-Data Availability
-Source: Kaggle – Student Mental Health (Shariful Islam, 2023)
-
-License: See dataset page for details
-
+Data Availability  
+Source: Kaggle – Student Mental Health (Shariful Islam, 2023)  
+License: See dataset page for details  
 Ethics: Public anonymized dataset; no human-subjects involvement
 
-```{r session-info}
+```{r sessioninfo}
 sessionInfo()
+```
