@@ -16,7 +16,7 @@ fontsize: 11pt
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = FALSE)
 library(tidyverse)
 library(knitr)
 library(broom)
@@ -152,5 +152,6 @@ Ethics: Public anonymized dataset; no human-subjects involvement
 ```{r sessioninfo}
 sessionInfo()
 ```
+
 
 
